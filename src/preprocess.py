@@ -12,6 +12,14 @@
 import pandas as pd
 import numpy as np
 import json
+from pathlib import Path
+
+# ==================== 路径配置 ====================
+# 以仓库根目录（src 的上级目录）为基准，保证在任意工作目录下都能运行
+ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT / 'data'
+OUTPUT_DIR = ROOT / 'output'
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 print("=" * 60)
 print("银行营销数据集 - 数据预处理")
@@ -19,7 +27,7 @@ print("=" * 60)
 
 # ==================== 1. 加载数据 ====================
 print("\n[1] 加载数据...")
-df = pd.read_csv('bank.csv', sep=';')
+df = pd.read_csv(DATA_DIR / 'bank.csv', sep=';')
 print(f"数据集大小: {df.shape[0]} 行 × {df.shape[1]} 列")
 
 # ==================== 2. 数据探索 ====================
@@ -84,7 +92,7 @@ print(f"总联系次数统计: mean={df['total_contacts'].mean():.2f}, "
 print("\n[4] 保存预处理后的数据...")
 
 # 保存完整预处理数据（CSV格式，供Scala Spark读取）
-output_file = 'bank_processed.csv'
+output_file = OUTPUT_DIR / 'bank_processed.csv'
 df.to_csv(output_file, index=False, sep=';')
 print(f"预处理后数据已保存到: {output_file}")
 print(f"总列数: {len(df.columns)}")
@@ -118,7 +126,7 @@ stats = {
     'y_by_poutcome': df.groupby('poutcome')['y'].apply(lambda x: (x == 'yes').mean()).to_dict(),
 }
 
-with open('preprocess_stats.json', 'w', encoding='utf-8') as f:
+with open(OUTPUT_DIR / 'preprocess_stats.json', 'w', encoding='utf-8') as f:
     json.dump(stats, f, ensure_ascii=False, indent=2)
 print("统计结果已保存到: preprocess_stats.json")
 

@@ -1,6 +1,10 @@
 // Spark 银行营销分析
 // 组件：SparkCore, SparkSQL, SparkMLlib
 // 目标：预测定期存款订阅（y）
+//
+// 运行说明：请在【仓库根目录】下启动 spark-shell 并加载本脚本，例如
+//     spark-shell -i src/spark_analysis.scala
+// 数据统一从 data/ 读取，结果统一写入 output/。
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
@@ -25,7 +29,7 @@ println("Spark version: " + spark.version)
 // 1. 加载数据
 // ============================================================
 // 读取 CSV 文件，指定分隔符为分号，自动推断数据类型
-val df = spark.read.option("header", "true").option("inferSchema", "true").option("sep", ";").csv("bank.csv")
+val df = spark.read.option("header", "true").option("inferSchema", "true").option("sep", ";").csv("data/bank.csv")
 println(s"Data: ${df.count()} rows x ${df.columns.length} columns")
 df.createOrReplaceTempView("bank")  // 注册临时视图供 SQL 使用
 
@@ -175,9 +179,10 @@ println(s"Best model: $best")
 import java.io.{File, PrintWriter}
 
 val json = s"""{"lr_auc": $lrAUC, "rf_auc": $rfAUC, "dt_auc": $dtAUC, "best": "$best", "train_n": ${trainDF.count()}, "test_n": ${testDF.count()}}"""
-val pw = new PrintWriter(new File("model_results.json"))
+new File("output").mkdirs()  // 确保输出目录存在
+val pw = new PrintWriter(new File("output/model_results.json"))
 pw.write(json); pw.close()
-println("\nResults saved to model_results.json")
+println("\nResults saved to output/model_results.json")
 
 // 关闭 Spark 会话
 spark.stop()

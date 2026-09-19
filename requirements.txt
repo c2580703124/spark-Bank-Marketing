@@ -1,0 +1,5 @@
+# 数据预处理与结果可视化所需的 Python 依赖
+# 安装： pip install -r requirements.txt
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7

@@ -13,6 +13,15 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from matplotlib.gridspec import GridSpec
 import os
+from pathlib import Path
+
+# ============================================================
+# 路径配置（以仓库根目录为基准）
+# ============================================================
+ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT / 'data'
+OUTPUT_DIR = ROOT / 'output'
+PLOTS_DIR = ROOT / 'plots'
 
 # ============================================================
 # 设置中文字体
@@ -32,15 +41,15 @@ if not USE_CHINESE:
 def load_data():
     """Load all analysis results"""
     # Load preprocessing stats
-    with open('preprocess_stats.json', 'r', encoding='utf-8') as f:
+    with open(OUTPUT_DIR / 'preprocess_stats.json', 'r', encoding='utf-8') as f:
         stats = json.load(f)
 
     # Load model results
-    with open('model_results.json', 'r') as f:
+    with open(OUTPUT_DIR / 'model_results.json', 'r') as f:
         model_results = json.load(f)
 
     # Load bank data
-    df = pd.read_csv('bank.csv', sep=';')
+    df = pd.read_csv(DATA_DIR / 'bank.csv', sep=';')
     return df, stats, model_results
 
 def plot_target_distribution(stats, ax):
@@ -365,13 +374,13 @@ def create_summary_dashboard(df, stats, model_results):
 
 def create_individual_plots(df, stats, model_results):
     """Create individual plots for report"""
-    os.makedirs('plots', exist_ok=True)
+    os.makedirs(PLOTS_DIR, exist_ok=True)
 
     # 1. Target distribution pie chart
     fig, ax = plt.subplots(figsize=(8, 6))
     plot_target_distribution(stats, ax)
     plt.tight_layout()
-    fig.savefig('plots/1_target_distribution.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '1_target_distribution.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/1_target_distribution.png")
 
@@ -379,7 +388,7 @@ def create_individual_plots(df, stats, model_results):
     fig, ax = plt.subplots(figsize=(10, 8))
     plot_job_subscription(stats, ax)
     plt.tight_layout()
-    fig.savefig('plots/2_job_subscription.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '2_job_subscription.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/2_job_subscription.png")
 
@@ -387,7 +396,7 @@ def create_individual_plots(df, stats, model_results):
     fig, ax = plt.subplots(figsize=(10, 6))
     plot_monthly_effect(stats, ax)
     plt.tight_layout()
-    fig.savefig('plots/3_monthly_effect.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '3_monthly_effect.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/3_monthly_effect.png")
 
@@ -395,7 +404,7 @@ def create_individual_plots(df, stats, model_results):
     fig, ax = plt.subplots(figsize=(8, 6))
     plot_model_comparison(model_results, ax)
     plt.tight_layout()
-    fig.savefig('plots/4_model_comparison.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '4_model_comparison.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/4_model_comparison.png")
 
@@ -409,7 +418,7 @@ def create_individual_plots(df, stats, model_results):
     ax.set_title('Age Distribution by Subscription', fontsize=14, fontweight='bold')
     ax.legend(fontsize=10)
     plt.tight_layout()
-    fig.savefig('plots/5_age_distribution.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '5_age_distribution.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/5_age_distribution.png")
 
@@ -417,7 +426,7 @@ def create_individual_plots(df, stats, model_results):
     fig, ax = plt.subplots(figsize=(10, 6))
     plot_duration_analysis(df, ax)
     plt.tight_layout()
-    fig.savefig('plots/6_duration_distribution.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '6_duration_distribution.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/6_duration_distribution.png")
 
@@ -425,7 +434,7 @@ def create_individual_plots(df, stats, model_results):
     fig, ax = plt.subplots(figsize=(10, 6))
     plot_numeric_comparison(df, ax)
     plt.tight_layout()
-    fig.savefig('plots/7_numeric_comparison.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '7_numeric_comparison.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/7_numeric_comparison.png")
 
@@ -443,7 +452,7 @@ def create_individual_plots(df, stats, model_results):
     ax.set_ylabel('Balance (EUR)', fontsize=11)
     ax.set_title('Balance Distribution by Subscription', fontsize=14, fontweight='bold')
     plt.tight_layout()
-    fig.savefig('plots/8_balance_boxplot.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / '8_balance_boxplot.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/8_balance_boxplot.png")
 
@@ -466,14 +475,14 @@ if __name__ == '__main__':
     print("\nGenerating comprehensive dashboard...")
     fig = create_summary_dashboard(df, stats, model_results)
     plt.tight_layout()
-    fig.savefig('plots/comprehensive_dashboard.png', dpi=150, bbox_inches='tight')
+    fig.savefig(PLOTS_DIR / 'comprehensive_dashboard.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
     print("  Saved: plots/comprehensive_dashboard.png")
 
     # Show summary
     print("\n" + "=" * 60)
     print("Visualization complete!")
-    print(f"All plots saved to: {os.path.abspath('plots/')}")
+    print(f"All plots saved to: {PLOTS_DIR}")
     print("=" * 60)
 
     # Print analysis summary
